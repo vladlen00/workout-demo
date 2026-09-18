@@ -292,6 +292,27 @@ html, body {
   font-size: 0.65rem; letter-spacing: 0.2em;
   color: rgba(120,100,180,0.35); pointer-events: none;
 }
+
+/* ДЕМО: приглашение под видео. Женщина смотрит тренировку и упирается в технику,
+   это лучший момент сказать, что разборы техники есть. Без хранилища и скриптов. */
+.demo-upsell {
+  margin-top: 18px; padding: 16px;
+  background: rgba(140,80,240,0.12);
+  border: 1px solid rgba(160,100,255,0.3);
+  border-radius: 14px;
+}
+.demo-upsell-title {
+  font-size: 0.95rem; font-weight: 600; color: #e0d8f0; margin-bottom: 6px;
+}
+.demo-upsell-text {
+  font-size: 0.85rem; line-height: 1.5; color: rgba(220,200,255,0.75); margin-bottom: 12px;
+}
+.demo-upsell-cta {
+  display: block; text-align: center; padding: 12px 16px;
+  background: rgba(140,80,240,0.4); border: 1px solid rgba(160,100,255,0.5);
+  border-radius: 14px; color: #e0d8f0; font-size: 0.9rem; font-weight: 600;
+  text-decoration: none;
+}
 </style>
 </head>
 <body>
@@ -355,6 +376,11 @@ html, body {
           <div class="player-desc-text" id="playerDescText"></div>
         </div>
       </details>
+      <div class="demo-upsell">
+        <div class="demo-upsell-title">Дальше будет сложнее</div>
+        <div class="demo-upsell-text">Ещё 6 тренировок и 6 разборов техники (вакуум, наули) доступны по подписке.</div>
+        <a class="demo-upsell-cta" href="https://app.irenabio.com/?from=demo-workout">Открыть полный доступ</a>
+      </div>
     </div>
   </div>
 </div>
