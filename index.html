@@ -247,6 +247,8 @@ html, body {
 }
 .workout-item:active { background: rgba(120,60,220,0.3); border-color: rgba(160,100,255,0.5); }
 .workout-item.locked { opacity: 0.5; cursor: default; pointer-events: none; }
+/* ДЕМО: закрытые тренировки нажимаются и ведут в оформление подписки. */
+.workout-item.locked.demo-buy { pointer-events: auto; cursor: pointer; }
 
 .workout-num {
   width: 36px; height: 36px; border-radius: 10px;
@@ -319,10 +321,10 @@ html, body {
 <div class="bg"></div>
 
 <div class="app">
-  <!-- ДЕМО: на месте кнопки возврата в приложение стоит выход к полному доступу.
+  <!-- ДЕМО: возврат на витрину app.irenabio.com (03.10, было «Что ещё есть»).
        Видна всегда: демо живёт только в браузере. -->
   <button id="demoMoreBtn" type="button" onclick="location.href='https://app.irenabio.com/?from=demo-workout'"
-    style="display:inline-flex;align-items:center;gap:6px;margin:14px 24px 0;padding:8px 14px;background:rgba(140,80,240,0.18);border:1px solid rgba(160,100,255,0.35);border-radius:12px;color:#e0d8f0;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Что ещё есть</button>
+    style="display:inline-flex;align-items:center;gap:6px;margin:14px 24px 0;padding:8px 14px;background:rgba(140,80,240,0.18);border:1px solid rgba(160,100,255,0.35);border-radius:12px;color:#e0d8f0;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">← Вернуться</button>
   <div class="header">
     <div class="header-title">Тренировки «Женское тело»</div>
     <div class="header-sub">
@@ -415,6 +417,18 @@ let currentTab = 'workouts';
 // что на неё может сослаться разметка, а не потому что она что-то делает.
 function switchTab(tab) { currentTab = tab; }
 
+// ДЕМО: остальные тренировки программы (названия из боевого workout, без роликов).
+// Нажатие ведёт в оформление подписки на app.irenabio.com.
+const DEMO_BUY_URL = 'https://app.irenabio.com/?from=demo-workout&buy=1';
+const LOCKED_WORKOUTS = [
+  ['Тренировка 02', 'Базовый этап'],
+  ['Тренировка 03', 'На силу и контроль'],
+  ['Тренировка 04', 'Укрепление корпуса'],
+  ['Тренировка 05', 'Максимальный рельеф'],
+  ['Тренировка 06', 'Бонусная, с фитболом'],
+  ['Тренировка МТД', 'Как заниматься'],
+];
+
 async function init() {
   // ДЕМО: расписания нет, тренировка одна и открыта всегда.
   const wList = document.getElementById('workoutList');
@@ -429,6 +443,22 @@ async function init() {
       <div class="workout-play"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
     `;
     div.onclick = () => openVideo(v);
+    wList.appendChild(div);
+  });
+
+  // ДЕМО: остальная программа видна целиком, но под замком. Только названия, роликов нет.
+  LOCKED_WORKOUTS.forEach(([title, sub], idx) => {
+    const div = document.createElement('div');
+    div.className = 'workout-item locked demo-buy';
+    div.innerHTML = `
+      <div class="workout-num">${String(WORKOUTS.length + idx + 1).padStart(2, '0')}</div>
+      <div class="workout-info">
+        <div class="workout-name">${title}</div>
+        <div class="unlock-soon">${sub} · по подписке</div>
+      </div>
+      <div class="workout-play">🔒</div>
+    `;
+    div.onclick = () => { location.href = DEMO_BUY_URL; };
     wList.appendChild(div);
   });
 
