@@ -302,6 +302,14 @@ html, body {
   background: rgba(140,80,240,0.12);
   border: 1px solid rgba(160,100,255,0.3);
   border-radius: 14px;
+  transition: background 1.2s ease, border-color 1.2s ease, box-shadow 1.2s ease;
+}
+/* Ролик досмотрен (событие ended плеера Kinescope по протоколу player.js):
+   блок мягко подсвечивается. Без всплывающих окон и без прокрутки. */
+.demo-upsell.lit {
+  background: rgba(140,80,240,0.22);
+  border-color: rgba(190,140,255,0.75);
+  box-shadow: 0 0 26px rgba(150,90,255,0.28);
 }
 .demo-upsell-title {
   font-size: 0.95rem; font-weight: 600; color: #e0d8f0; margin-bottom: 6px;
@@ -379,9 +387,9 @@ html, body {
         </div>
       </details>
       <div class="demo-upsell">
-        <div class="demo-upsell-title">Это первая из семи</div>
-        <div class="demo-upsell-text">Остальные тренировки и разборы техники открыты по подписке.</div>
-        <a class="demo-upsell-cta" href="https://app.irenabio.com/?from=demo-workout&amp;buy=1">Открыть полный доступ</a>
+        <div class="demo-upsell-title">Почувствовала мышцы?</div>
+        <div class="demo-upsell-text">Это первая из семи тренировок. Остальные шесть и разборы техники ждут тебя внутри.</div>
+        <a class="demo-upsell-cta" href="https://app.irenabio.com/?from=demo-workout-end&amp;buy=1">Открыть все тренировки</a>
       </div>
     </div>
   </div>
@@ -497,6 +505,7 @@ function openVideo(item) {
 
 function closeVideo() {
   document.getElementById('videoFrame').src = '';
+  document.querySelector('.demo-upsell').classList.remove('lit');
   document.getElementById('playerPodcastBtn').onclick = null;
   document.getElementById('playerSelfCheckBtn').onclick = null;
   document.getElementById('playerDesc').open = false;
@@ -505,6 +514,25 @@ function closeVideo() {
   document.getElementById('playerScreen').classList.remove('active');
   document.getElementById('listScreen').classList.add('active');
 }
+
+// ДЕМО: конец ролика. Kinescope сам события конца не шлёт, но говорит по протоколу
+// player.js: присылает {context:"player.js", event:"ready"} строкой JSON, а после
+// подписки на "ended" присылает {event:"ended"} (проверено живым прогоном 28.10.2026
+// на app.irenabio.com/#urok). Берём сообщения только от нашего iframe.
+window.addEventListener('message', function(e) {
+  if (e.origin !== 'https://kinescope.io') return;
+  const f = document.getElementById('videoFrame');
+  if (!f || e.source !== f.contentWindow) return;
+  let m = e.data;
+  if (typeof m === 'string' && m.charAt(0) === '{') { try { m = JSON.parse(m); } catch (err) { m = null; } }
+  if (!m || typeof m !== 'object' || m.context !== 'player.js') return;
+  if (m.event === 'ready') {
+    f.contentWindow.postMessage(JSON.stringify({ context: 'player.js', version: m.version || '0.0.11',
+      method: 'addEventListener', value: 'ended', listener: 'demo_end' }), 'https://kinescope.io');
+  } else if (m.event === 'ended') {
+    document.querySelector('.demo-upsell').classList.add('lit');
+  }
+});
 
 // ДЕМО: гейта нет, тренировка открыта сразу.
 init().catch(() => {
